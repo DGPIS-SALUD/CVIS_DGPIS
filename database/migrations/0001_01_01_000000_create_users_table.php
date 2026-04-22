@@ -6,21 +6,32 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            
+            // Llave de acceso CVIS (LlaveMX Style)
+            $table->string('curp', 18)->unique()->index(); 
+            
+            // Datos básicos y contacto
+            $table->string('name'); // Nombre completo (se puede actualizar tras validar CURP)
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // --- MATRIZ DE PERFILES CVIS ---
+            // Grupo principal: Define si es personal interno o externo
+            $table->enum('user_group', ['DGPIS', 'EXTERNAL'])->default('EXTERNAL');
+            
+            // Rol específico: dictaminador, investigador, enlace, etc.
+            $table->string('role')->index(); 
+
             $table->rememberToken();
             $table->timestamps();
         });
 
+        // Tablas auxiliares de Laravel (Sin cambios necesarios)
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -37,9 +48,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
