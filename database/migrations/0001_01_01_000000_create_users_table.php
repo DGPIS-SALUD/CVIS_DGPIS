@@ -23,9 +23,9 @@ return new class extends Migration
             // --- MATRIZ DE PERFILES CVIS ---
             // Grupo principal: Define si es personal interno o externo
             $table->enum('user_group', ['DGPIS', 'EXTERNAL'])->default('EXTERNAL');
-            
             // Rol específico: dictaminador, investigador, enlace, etc.
             $table->string('role')->index(); 
+
 
             $table->rememberToken();
             $table->timestamps();

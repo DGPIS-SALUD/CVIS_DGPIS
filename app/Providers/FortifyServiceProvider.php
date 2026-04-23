@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
+use App\Models\Institution;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -66,7 +67,14 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/Register'));
+        Fortify::registerView(function () {
+            return Inertia::render('auth/Register', [
+                // Enviamos el catálogo de Dependencias (Nivel 1)
+                'dependencies' => Institution::whereNull('parent_id')
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'short_name'])
+            ]);
+        });
 
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
 
